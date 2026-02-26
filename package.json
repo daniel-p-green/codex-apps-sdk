@@ -11,7 +11,8 @@
     "test": "vitest run",
     "validate:matrix": "tsx scripts/validate-matrix.ts",
     "apps:list": "tsx scripts/codex-app-list.ts",
-    "apps:health": "tsx scripts/codex-app-health.ts"
+    "apps:health": "tsx scripts/codex-app-health.ts",
+    "apps:smoke:mention": "tsx scripts/codex-app-mention-smoke.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/ext-apps": "^1.0.1",
