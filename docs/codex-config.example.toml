@@ -1,0 +1,13 @@
+[features]
+apps = true
+
+[apps._default]
+enabled = true
+destructive_enabled = true
+open_world_enabled = true
+
+# Optional per-app override example:
+# [apps.google_drive]
+# enabled = true
+# default_tools_approval_mode = "prompt"
+# destructive_enabled = false

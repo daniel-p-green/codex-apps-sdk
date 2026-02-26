@@ -1,0 +1,4 @@
+interface:
+  display_name: Codex Inline Apps
+  short_description: Connector-first inline app workflow with optional UI host mode.
+  default_prompt: Use app mentions and MCP tools first; only render widget UI when host capability is explicitly enabled.

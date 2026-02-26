@@ -1,0 +1,27 @@
+{
+  "name": "codex-apps-sdk-dual-mode-spike",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Dual-mode Apps SDK + Codex connector spike (tool-first fallback with optional UI host mode).",
+  "scripts": {
+    "dev": "tsx src/server.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/src/server.js",
+    "test": "vitest run",
+    "validate:matrix": "tsx scripts/validate-matrix.ts",
+    "apps:list": "tsx scripts/codex-app-list.ts",
+    "apps:health": "tsx scripts/codex-app-health.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/ext-apps": "^1.0.1",
+    "@modelcontextprotocol/sdk": "^1.20.2",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.5"
+  }
+}

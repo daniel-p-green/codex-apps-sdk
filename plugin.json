@@ -1,0 +1,12 @@
+{
+  "name": "codex-apps-inline",
+  "version": "0.1.0",
+  "description": "Dual-mode connector workflow: Codex tool-first app mentions with optional host UI rendering.",
+  "commands": [
+    "commands/apps-discover.md",
+    "commands/apps-health.md"
+  ],
+  "skills": [
+    "skills/codex-inline-apps"
+  ]
+}

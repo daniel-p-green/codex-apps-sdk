@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Docs Catalog Widget</title>
+    <style>
+      :root {
+        color: #111827;
+        font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      }
+
+      body {
+        margin: 0;
+        background: #f3f4f6;
+      }
+
+      main {
+        margin: 0;
+        padding: 16px;
+      }
+
+      .card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 14px;
+      }
+
+      h2 {
+        margin: 0 0 8px;
+        font-size: 1.1rem;
+      }
+
+      .hint {
+        margin: 0 0 10px;
+        font-size: 0.85rem;
+        color: #6b7280;
+      }
+
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      li {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 10px;
+      }
+
+      li a {
+        color: #1d4ed8;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      li p {
+        margin: 4px 0 0;
+        font-size: 0.9rem;
+        color: #374151;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="card">
+        <h2>Catalog Results</h2>
+        <p class="hint" id="hint">Waiting for tool result from MCP Apps host bridge...</p>
+        <ul id="results"></ul>
+      </section>
+    </main>
+
+    <script type="module">
+      const list = document.querySelector("#results");
+      const hint = document.querySelector("#hint");
+
+      const render = (items) => {
+        list.innerHTML = "";
+        if (!Array.isArray(items) || items.length === 0) {
+          const empty = document.createElement("li");
+          empty.textContent = "No items to render.";
+          list.appendChild(empty);
+          return;
+        }
+
+        items.forEach((item) => {
+          const li = document.createElement("li");
+          const anchor = document.createElement("a");
+          anchor.href = item.url;
+          anchor.target = "_blank";
+          anchor.rel = "noreferrer noopener";
+          anchor.textContent = item.title;
+          const summary = document.createElement("p");
+          summary.textContent = item.summary;
+          li.appendChild(anchor);
+          li.appendChild(summary);
+          list.appendChild(li);
+        });
+      };
+
+      const applyToolResult = (payload) => {
+        const items = payload?.structuredContent?.items ?? [];
+        render(items);
+        hint.textContent = `Rendered ${items.length} item(s) from tool result.`;
+      };
+
+      // Initial fallback state for hosts without MCP Apps UI bridge.
+      setTimeout(() => {
+        if (list.children.length === 0) {
+          hint.textContent =
+            "No host bridge events received yet. In Codex fallback mode, use text/structured tool output.";
+        }
+      }, 1200);
+
+      window.addEventListener(
+        "message",
+        (event) => {
+          if (event.source !== window.parent) return;
+          const message = event.data;
+          if (!message || message.jsonrpc !== "2.0") return;
+          if (message.method !== "ui/notifications/tool-result") return;
+          applyToolResult(message.params);
+        },
+        { passive: true }
+      );
+    </script>
+  </body>
+</html>
