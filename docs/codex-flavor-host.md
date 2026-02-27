@@ -1,128 +1,109 @@
-# Codex Flavor Host (Figma-First Embedded UI)
+# Companion Host Runbook (Figma-First Embedded UI)
 
-This document describes the production-oriented custom host implementation added to this repo to support embedded Apps-style UI in a Codex flavor.
+Status: operational runbook for local companion host usage.
 
-## What This Adds
+For architecture details, data flow, and security model, use `docs/architecture-spec.md` as the source of truth.
 
-1. **Custom host runtime over `codex app-server`**
-- File: `/Users/danielgreen/Documents/GitHub/codex-apps-sdk/src/codex-flavor-host.ts`
-- Static web client + API + SSE event stream.
+## Scope Of This Document
 
-2. **App-server adapter with extended MCP read APIs**
-- File: `/Users/danielgreen/Documents/GitHub/codex-apps-sdk/src/host/app-server-gateway.ts`
-- Adds adapter methods for:
-  - `mcpServer/tool/read`
-  - `mcpServer/resource/read`
-  - `mcpServer/resourceTemplate/read`
-- Includes compatibility fallback when native app-server methods are unavailable.
+Use this doc for:
+- Starting and operating the companion host locally
+- Calling the local host API endpoints
+- Troubleshooting host/runtime behavior
 
-3. **Thread item enrichment**
-- `item/started` and `item/completed` notifications are enriched for `mcpToolCall` items with:
-  - `item.result.result_meta.tool_meta`
-  - `item.result.result_meta.resolved_template_uri`
-  - `item.result.result_meta.resolved_template_source`
-  - `item.result.result_meta.ui_allowed`
+Do not use this doc as the architecture source of truth.
 
-4. **Figma-first inline render path**
-- Browser client:
-  - `/Users/danielgreen/Documents/GitHub/codex-apps-sdk/public/codex-flavor/index.html`
-  - `/Users/danielgreen/Documents/GitHub/codex-apps-sdk/public/codex-flavor/app.js`
-  - `/Users/danielgreen/Documents/GitHub/codex-apps-sdk/public/codex-flavor/styles.css`
-- Resolves template URI using required precedence and mounts inline iframe widgets when possible.
-- Falls back to readable tool output when template content is unavailable.
+## Runtime Components
 
-## API Surface (Host Adapter)
+1. Companion host server
+- File: `/Users/danielgreen/Documents/GitHub/codex-apps-sdk/apps/companion-host/src/server.ts`
+- Responsibility: static UI hosting, local API endpoints, SSE stream
 
-### GET `/api/health`
-- Returns host policy and runtime state.
+2. Codex relay
+- File: `/Users/danielgreen/Documents/GitHub/codex-apps-sdk/apps/codex-relay/src/codex-relay.ts`
+- Responsibility: `codex app-server` JSON-RPC adapter and event enrichment
 
-### GET `/api/models`
-- Proxies `model/list`.
+3. Frontend client
+- Files:
+  - `/Users/danielgreen/Documents/GitHub/codex-apps-sdk/apps/companion-host/public/index.html`
+  - `/Users/danielgreen/Documents/GitHub/codex-apps-sdk/apps/companion-host/public/app.js`
+  - `/Users/danielgreen/Documents/GitHub/codex-apps-sdk/apps/companion-host/public/styles.css`
 
-### GET `/api/apps?forceRefetch=<bool>`
-- Proxies `app/list`.
+## Quick Start
 
-### GET `/api/mcp/servers/status?forceRefresh=<bool>`
-- Proxies and caches `mcpServerStatus/list`.
+```bash
+npm run dev:host
+```
 
-### POST `/api/thread/start`
-Body:
+Open the host UI at the local URL configured by `HOST_PORT` (default in code: `8790`).
+
+## API Surface
+
+### Session + turn
+
+- `POST /session/start`
 ```json
 { "model": "gpt-5.3-codex" }
 ```
 
-### POST `/api/turn/start`
-Body:
+- `POST /turn/start`
 ```json
 {
-  "threadId": "thr_xxx",
+  "sessionId": "sess_xxx",
   "text": "Generate a figjam diagram",
   "app": { "id": "connector_x", "name": "Figma", "slug": "figma" }
 }
 ```
 
-### POST `/api/turn/steer`
-Body:
+- `POST /turn/steer`
 ```json
-{ "threadId": "thr_xxx", "text": "Continue with tool output only." }
+{ "sessionId": "sess_xxx", "text": "Continue with tool output only." }
 ```
 
-### POST `/api/mcpServer/tool/read`
-Body:
+### Events
+
+- `GET /events`
+- Stream includes relay item events, turn events, and widget decisions.
+
+### MCP metadata reads
+
+- `POST /mcp/tool/read`
 ```json
 { "server": "codex_apps", "tool": "figma_generate_diagram" }
 ```
 
-### POST `/api/mcpServer/resource/read`
-Body:
+- `POST /mcp/resource/read`
 ```json
 { "server": "codex_apps", "uri": "ui://widget/figjam-diagram.html" }
 ```
 
-### POST `/api/mcpServer/resourceTemplate/read`
-Body:
+- `POST /mcp/resourceTemplate/read`
 ```json
 { "server": "codex_apps", "uriTemplate": "ui://widget/{id}.html" }
 ```
 
-### POST `/api/bridge/tools/call`
-Body:
+### Bridge relay
+
+- `POST /bridge/tools/call`
 ```json
 {
-  "threadId": "thr_xxx",
+  "sessionId": "sess_xxx",
   "toolName": "figma_generate_diagram",
   "arguments": { "name": "Flow", "mermaidSyntax": "flowchart LR; A-->B" },
   "appSlug": "figma"
 }
 ```
 
-Relay mode:
-- Uses app-server turn flow (`turn/steer`) to request tool invocation.
+## Troubleshooting
 
-### GET `/api/events`
-- Server-sent events for app-server notifications (enriched item payloads).
+1. No apps listed
+- Check Codex app-server status and app availability.
+- Verify with `npm run apps:list` and `npm run apps:health`.
 
-## Template URI Resolution Contract
+2. Widget does not render
+- Confirm tool result contains template metadata.
+- Check policy allow/block settings and fallback events in host output.
 
-Implemented in:
-- `/Users/danielgreen/Documents/GitHub/codex-apps-sdk/src/host/widget-resolution.ts`
-
-Precedence:
-1. `result_meta.ui.resourceUri`
-2. `result_meta["openai/outputTemplate"]`
-3. `tool_meta.ui.resourceUri`
-4. `tool_meta["openai/outputTemplate"]`
-
-## Embedded UI Policy Controls
-
-Environment variables:
-- `EMBEDDED_UI_ENABLED` (`true` by default)
-- `EMBEDDED_UI_ALLOWED_APPS` (comma-separated)
-- `EMBEDDED_UI_BLOCKED_APPS` (comma-separated)
-
-Implementation:
-- `/Users/danielgreen/Documents/GitHub/codex-apps-sdk/src/host/ui-policy.ts`
-
-## Notes on Current Platform Gaps
-
-When native app-server resource-read methods are not available, the adapter falls back to MCP status cache metadata for continuity. This preserves flow and keeps fallback behavior deterministic while still enabling inline rendering when resource HTML is obtainable.
+3. MCP metadata lookup fails
+- Verify server name and URI.
+- Retry via the compatibility aliases if testing older clients.

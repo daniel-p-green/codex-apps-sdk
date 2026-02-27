@@ -1,5 +1,7 @@
 # Validation Matrix
 
+Status: archived on February 27, 2026. Current test planning source: `docs/engineering/test-strategy.md`.
+
 ## Scenarios
 
 ### Positive

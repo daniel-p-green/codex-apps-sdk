@@ -1,5 +1,7 @@
 # Feasibility Report: Apps SDK Inline with Codex
 
+Status: archived on February 27, 2026. Current feasibility source: `docs/plan1-codex-apps-ui-feasibility.md`.
+
 Date: February 26, 2026
 
 ## Decision

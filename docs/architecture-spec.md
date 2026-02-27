@@ -1,80 +1,99 @@
-# Architecture Spec: Dual-Mode Apps SDK + Codex Connector Integration
+# Architecture Spec: Codex Mac + Companion Embedded Apps (Figma First)
 
 ## Overview
 
-This spike implements a single MCP backend with host-dependent presentation behavior:
+The runtime is split into two independently replaceable layers:
 
-- Tool-first baseline for Codex and any non-UI host.
-- Optional render-tool metadata for hosts with MCP Apps UI support.
+1. **Companion Host (`apps/companion-host`)**
+- Local web UI pane for timeline, widget rendering, and bridge runtime.
+- Exposes local HTTP + SSE API used by the browser client.
 
-## Components
+2. **Codex Relay (`apps/codex-relay`)**
+- JSON-RPC adapter over `codex app-server`.
+- Normalizes app/tool events and enriches MCP tool call results.
 
-1. `src/server.ts`
-- Streamable HTTP MCP endpoint (`/mcp`).
-- Registers one data tool and one render tool.
-- Registers a widget resource (`ui://widget/catalog.html`).
+Shared logic is centralized in packages so we can replace only the host adapter in the future if native stock Codex embed becomes available.
 
-2. Data and mode core
-- `src/core/catalog.ts`: deterministic search/fetch behavior.
-- `src/core/host-mode.ts`: host capability resolution (`UI_MODE`, `HOST_SUPPORTS_MCP_APPS_UI`).
-- `src/core/tool-meta.ts`: render-tool metadata gating.
+## Repo Layout
 
-3. UI resource
-- `public/catalog-widget.html`: receives tool-result notifications when host bridge is available and gracefully degrades when not.
+1. `apps/companion-host`
+- `src/server.ts`: local API + SSE server + static host
+- `public/*`: companion pane frontend
 
-4. Operational scripts
-- `scripts/codex-app-list.ts`: app discovery via `codex app-server` RPC `app/list`.
-- `scripts/codex-app-health.ts`: local readiness checks.
-- `scripts/validate-matrix.ts`: local compatibility assertions.
+2. `apps/codex-relay`
+- `src/codex-relay.ts`: app-server client, status cache, enrichment
 
-5. Skill/plugin wrappers
-- Skill: `skills/codex-inline-apps/SKILL.md`.
-- Commands: `commands/apps-discover.md`, `commands/apps-health.md`.
+3. `packages/protocol`
+- Shared interfaces for relay responses, widget decisions, bridge requests
 
-6. Codex flavor host (embedded UI runtime)
-- `src/codex-flavor-host.ts`: custom host over `codex app-server` with REST + SSE.
-- `src/host/app-server-gateway.ts`: protocol adapter + MCP status cache + event enrichment.
-- `src/host/widget-resolution.ts`: deterministic template URI resolution precedence.
-- `src/host/ui-policy.ts`: app-level UI kill switches and allow/block controls.
-- `public/codex-flavor/*`: browser client rendering inline iframe widgets and bridge relay.
+4. `packages/widget-runtime`
+- Template URI resolution precedence
+- Embedded UI policy allow/block logic
+- Bridge request/origin validation helpers
 
-## Public Tool Interfaces
+5. `packages/app-adapters/figma`
+- Figma render-capable tool detection
+- Trusted Figma URL extraction
 
-### `search_or_fetch_catalog`
+6. `packages/telemetry`
+- Structured telemetry sink + event emitter
 
-Input:
-- `query?: string`
-- `ids?: string[]`
-- `limit?: number (1..20)`
+## Relay API (Local)
 
-Output:
-- `content[]` text summary
-- `structuredContent.strategy`
-- `structuredContent.totalMatches`
-- `structuredContent.selectedIds`
-- `structuredContent.items[]`
-- `structuredContent.host.{uiMode, uiEnabled, reason}`
+Primary endpoints:
 
-### `render_catalog_widget`
+- `POST /session/start` -> `{ sessionId, threadId, model }`
+- `POST /turn/start` -> `{ accepted: true, turnId }`
+- `GET /events` (SSE)
+- `POST /mcp/tool/read`
+- `POST /mcp/resource/read`
+- `POST /mcp/resourceTemplate/read`
+- `POST /bridge/tools/call`
 
-Input:
-- `ids: string[] (1..20)`
+Compatibility aliases are still supported under `/api/*` and `mcpServer/*` paths.
 
-Output:
-- `content[]` text summary + fallback hint
-- `structuredContent.items[]`
-- `structuredContent.host.{uiMode, uiEnabled, reason}`
-- `_meta.ui.resourceUri` + `_meta["openai/outputTemplate"]` only when UI enabled
+## Event Enrichment
 
-## Host Capability Rules
+`mcpToolCall` items are enriched with:
 
-- `UI_MODE=chatgpt`: force UI metadata on render tool.
-- `UI_MODE=off`: force tool-only fallback.
-- `UI_MODE=auto` (default): UI disabled unless `HOST_SUPPORTS_MCP_APPS_UI=true`.
+- `result_meta.tool_meta`
+- `result_meta.resolved_template_uri`
+- `result_meta.resolved_template_source`
+- `result_meta.ui_allowed`
+- `result_meta.figma.renderCapable`
+- `result_meta.figma.trustedPreviewUrl`
+
+## Widget Resolution Rules
+
+Precedence:
+
+1. `result_meta.ui.resourceUri`
+2. `result_meta["openai/outputTemplate"]`
+3. `tool_meta.ui.resourceUri`
+4. `tool_meta["openai/outputTemplate"]`
+
+Resource read fallback order:
+
+1. `item.server`
+2. `codex_apps`
+
+## Security Model
+
+- No stock Codex client internals are modified.
+- Third-party app content renders in sandboxed iframes.
+- Bridge requests are constrained to `ui/initialize`, `ui/update-model-context`, and `tools/call`.
+- App-level and global embedded UI kill switches are enforced before render.
 
 ## Failure Behavior
 
-- Missing UI bridge does not fail tool flow.
-- Render tool still returns text + structured data in fallback mode.
-- Health endpoint (`/health`) remains available for local validation.
-- Host adapter `mcpServer/resource/read` / `resourceTemplate/read` gracefully fall back to cached metadata when direct read RPC is unavailable.
+- Missing/unreadable template URI does not break turn flow.
+- Companion host falls back to structured tool output cards.
+- Figma URLs are shown only when they pass trusted host checks.
+
+## Migration Path
+
+To migrate to future native in-stock embed support:
+
+1. Keep `packages/protocol` and `packages/widget-runtime` unchanged.
+2. Replace only the host adapter (`apps/companion-host`) with a native Codex host integration.
+3. Reuse relay enrichment, bridge contracts, and policy controls.
