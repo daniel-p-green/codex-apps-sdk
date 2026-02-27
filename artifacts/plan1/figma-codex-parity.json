@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2026-02-27T04:05:00.416Z",
+  "host": "codex",
+  "app": "Figma",
+  "command": "tsx scripts/codex-app-mention-smoke.ts --app Figma --prompt \"If this host supports embedded inline app UI, render it now. Otherwise explain what you can do via tools only.\"",
+  "exitCode": 0,
+  "ok": true,
+  "uiRendered": false,
+  "bridgeDetected": false,
+  "bridgeMethods": [],
+  "errors": [],
+  "evidence": {
+    "sawToolCall": false,
+    "sawTurnCompleted": true,
+    "mcpTools": [],
+    "mcpServers": [],
+    "uiKeywordSignal": false,
+    "agentFinalText": "This host does not support embedded inline app UI rendering in-chat, so I can’t render a live inline Figma app pane here.\n\nVia tools, I can still do quite a lot for you:\n\n- Read Figma nodes and return design context/code (`get_design_context`)\n- Pull structure/metadata/screenshots/variables (`get_metadata`, `get_screenshot`, `get_variable_defs`)\n- Generate FigJam diagrams and share editable links (`generate_diagram`)\n- Generate marketing assets or slide decks with Figma tools (`figma_generate_asset`, `figma_generate_deck`)\n- Map Figma nodes to code components with Code Connect tools\n- Capture webpages into Figma files (`generate_figma_design`)\n\nIf you share a Figma URL/node ID, I can run one of these now."
+  },
+  "finalVerdict": "NO_INLINE_WIDGET_SIGNAL_IN_CODEX"
+}

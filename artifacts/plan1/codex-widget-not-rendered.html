@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Codex Widget Render Evidence</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "SF Pro Text", "Segoe UI", Arial, sans-serif;
+        background: #0b1220;
+        color: #e7eef8;
+        padding: 28px;
+      }
+      .card {
+        max-width: 980px;
+        margin: 0 auto;
+        background: #111a2a;
+        border: 1px solid #28405d;
+        border-radius: 14px;
+        padding: 20px;
+      }
+      h1 { margin: 0 0 10px; font-size: 24px; }
+      .status {
+        display: inline-block;
+        margin-top: 12px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid #ef4444;
+        color: #fecaca;
+        background: rgba(239, 68, 68, 0.12);
+        font-weight: 700;
+      }
+      pre {
+        background: #0b1220;
+        border: 1px solid #28405d;
+        border-radius: 10px;
+        padding: 12px;
+        overflow: auto;
+        font-size: 13px;
+      }
+      .meta { opacity: 0.85; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Plan 1 Codex UI Render Evidence</h1>
+      <p class="meta">Source artifact: <code>artifacts/plan1/figma-codex-parity.json</code></p>
+      <div class="status">Widget Not Rendered In Codex (NO-GO condition)</div>
+      <p class="meta">This is an explicit non-render capture required by Plan 1 acceptance criteria.</p>
+      <pre>{
+  "host": "codex",
+  "uiRendered": false,
+  "bridgeDetected": false,
+  "finalVerdict": "NO_INLINE_WIDGET_SIGNAL_IN_CODEX"
+}</pre>
+    </div>
+  </body>
+</html>

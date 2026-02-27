@@ -1,0 +1,23 @@
+{
+  "generatedAt": "2026-02-27T04:04:31.957Z",
+  "command": "tsx scripts/codex-app-mention-smoke.ts --app Figma",
+  "exitCode": 0,
+  "ok": true,
+  "model": "gpt-5.3-codex",
+  "app": {
+    "id": "connector_68df038e0ba48191908c8434991bbac2",
+    "name": "Figma",
+    "slug": "figma"
+  },
+  "summary": {
+    "sawToolCall": true,
+    "sawTurnCompleted": true,
+    "mcpTools": [
+      "whoami"
+    ],
+    "mcpServers": [
+      "figma"
+    ]
+  },
+  "stderrPreview": "2026-02-27T04:03:56.670251Z ERROR codex_core::codex: failed to load skill /Users/danielgreen/.codex/skills/last30days-skill/SKILL.md: invalid YAML: did not find expected key at line 3 column 37, while parsing a block mapping\n2026-02-27T04:03:56.670270Z ERROR codex_core::codex: failed to load skill /Users/danielgreen/.agents/skills/playwright-best-practices/SKILL.md: invalid description: exceeds maximum length of 1024 characters\n2026-02-27T04:03:57.356001Z  WARN codex_state::runtime: failed to open state db at /Users/danielgreen/.codex/state_5.sqlite: migration 11 was previously applied but is missing in the resolved migrations\n2026-02-27T04:03:57.377831Z  WARN codex_core::state_db: state db record_discrepancy: find_thread_path_by_id_str_in_subdir, falling_back\n2026-02-27T04:03:57.378537Z  WARN codex_state::runtime: failed to open state db at /Users/danielgreen/.codex/state_5.sqlite: migration 11 was previously applied but is missing in the resolved migrations\n2026-02-27T04:03:57.402059"
+}

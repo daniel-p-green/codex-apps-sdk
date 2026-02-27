@@ -1,0 +1,48 @@
+{
+  "generatedAt": "2026-02-27T04:05:26.342Z",
+  "schema": [
+    "host",
+    "uiRendered",
+    "bridgeDetected",
+    "bridgeMethods",
+    "errors",
+    "finalVerdict"
+  ],
+  "probeEventCounts": {
+    "chatgpt": 0,
+    "codex": 1
+  },
+  "reliability": {
+    "runs": 3,
+    "requiredMajority": 2,
+    "summary": {
+      "baselineConnectorStable": true,
+      "codexInlineUiAbsentConsistent": true,
+      "canaryNotVisibleConsistent": true
+    },
+    "finalVerdict": "CONSISTENT_NO_GO_SIGNAL"
+  },
+  "hosts": [
+    {
+      "host": "chatgpt",
+      "uiRendered": false,
+      "bridgeDetected": false,
+      "bridgeMethods": [],
+      "errors": [
+        "Control run blocked: ChatGPT session in this environment is unauthenticated (login required before connector developer-mode test)."
+      ],
+      "finalVerdict": "CHATGPT_CONTROL_BLOCKED_AUTH"
+    },
+    {
+      "host": "codex",
+      "uiRendered": false,
+      "bridgeDetected": false,
+      "bridgeMethods": [],
+      "errors": [
+        "Canary app is not visible in Codex app/list for this account."
+      ],
+      "finalVerdict": "NO_INLINE_WIDGET_SIGNAL_IN_CODEX"
+    }
+  ],
+  "finalVerdict": "NO-GO: Embedded Apps UI is not currently available in Codex"
+}
