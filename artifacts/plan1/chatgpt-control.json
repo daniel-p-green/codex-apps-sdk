@@ -1,0 +1,15 @@
+{
+  "generatedAt": "2026-02-27T04:00:00.000Z",
+  "host": "chatgpt",
+  "uiRendered": false,
+  "bridgeDetected": false,
+  "bridgeMethods": [],
+  "errors": [
+    "Control run blocked: ChatGPT session in this environment is unauthenticated (login required before connector developer-mode test)."
+  ],
+  "evidence": {
+    "screenshot": "artifacts/plan1/chatgpt-widget.png",
+    "observedPageState": "chatgpt.com login gate visible"
+  },
+  "finalVerdict": "CHATGPT_CONTROL_BLOCKED_AUTH"
+}

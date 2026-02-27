@@ -12,6 +12,12 @@
     "types": ["node", "vitest/globals"],
     "baseUrl": "."
   },
-  "include": ["src/**/*.ts", "scripts/**/*.ts", "tests/**/*.ts"],
+  "include": [
+    "src/**/*.ts",
+    "apps/**/*.ts",
+    "packages/**/*.ts",
+    "scripts/**/*.ts",
+    "tests/**/*.ts"
+  ],
   "exclude": ["dist", "node_modules"]
 }

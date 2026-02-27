@@ -1,0 +1,77 @@
+{
+  "generatedAt": "2026-02-27T04:05:02.585Z",
+  "runs": 3,
+  "requiredMajority": 2,
+  "baselineRuns": [
+    {
+      "run": 1,
+      "exitCode": 0,
+      "ok": true,
+      "sawToolCall": true,
+      "sawTurnCompleted": true
+    },
+    {
+      "run": 2,
+      "exitCode": 0,
+      "ok": true,
+      "sawToolCall": true,
+      "sawTurnCompleted": true
+    },
+    {
+      "run": 3,
+      "exitCode": 0,
+      "ok": true,
+      "sawToolCall": true,
+      "sawTurnCompleted": true
+    }
+  ],
+  "parityRuns": [
+    {
+      "run": 1,
+      "exitCode": 0,
+      "uiRendered": false,
+      "bridgeDetected": false,
+      "finalVerdict": "NO_INLINE_WIDGET_SIGNAL_IN_CODEX"
+    },
+    {
+      "run": 2,
+      "exitCode": 0,
+      "uiRendered": false,
+      "bridgeDetected": false,
+      "finalVerdict": "NO_INLINE_WIDGET_SIGNAL_IN_CODEX"
+    },
+    {
+      "run": 3,
+      "exitCode": 0,
+      "uiRendered": false,
+      "bridgeDetected": false,
+      "finalVerdict": "NO_INLINE_WIDGET_SIGNAL_IN_CODEX"
+    }
+  ],
+  "availabilityRuns": [
+    {
+      "run": 1,
+      "exitCode": 0,
+      "canaryAppAccessible": false,
+      "finalVerdict": "CANARY_APP_NOT_VISIBLE_IN_CODEX_APP_LIST"
+    },
+    {
+      "run": 2,
+      "exitCode": 0,
+      "canaryAppAccessible": false,
+      "finalVerdict": "CANARY_APP_NOT_VISIBLE_IN_CODEX_APP_LIST"
+    },
+    {
+      "run": 3,
+      "exitCode": 0,
+      "canaryAppAccessible": false,
+      "finalVerdict": "CANARY_APP_NOT_VISIBLE_IN_CODEX_APP_LIST"
+    }
+  ],
+  "summary": {
+    "baselineConnectorStable": true,
+    "codexInlineUiAbsentConsistent": true,
+    "canaryNotVisibleConsistent": true
+  },
+  "finalVerdict": "CONSISTENT_NO_GO_SIGNAL"
+}

@@ -6,6 +6,9 @@
   "description": "Dual-mode Apps SDK + Codex connector spike (tool-first fallback with optional UI host mode).",
   "scripts": {
     "dev": "tsx src/server.ts",
+    "dev:host": "tsx src/codex-flavor-host.ts",
+    "dev:companion": "tsx apps/companion-host/src/server.ts",
+    "dev:plan1:canary": "tsx src/plan1-canary-server.ts",
     "build": "tsc -p tsconfig.build.json",
     "start": "node dist/src/server.js",
     "test": "vitest run",
@@ -15,7 +18,13 @@
     "validate:matrix": "tsx scripts/validate-matrix.ts",
     "apps:list": "tsx scripts/codex-app-list.ts",
     "apps:health": "tsx scripts/codex-app-health.ts",
-    "apps:smoke:mention": "tsx scripts/codex-app-mention-smoke.ts"
+    "apps:smoke:mention": "tsx scripts/codex-app-mention-smoke.ts",
+    "plan1:baseline": "tsx scripts/plan1-capture-baseline.ts",
+    "plan1:figma:parity": "tsx scripts/plan1-figma-codex-parity.ts",
+    "plan1:canary:availability": "tsx scripts/plan1-codex-canary-availability.ts",
+    "plan1:reliability": "tsx scripts/plan1-reliability.ts",
+    "plan1:decision": "tsx scripts/plan1-generate-decision-artifact.ts",
+    "plan1:run": "npm run plan1:baseline && npm run plan1:figma:parity && npm run plan1:canary:availability && npm run plan1:reliability && npm run plan1:decision"
   },
   "dependencies": {
     "@modelcontextprotocol/ext-apps": "^1.0.1",

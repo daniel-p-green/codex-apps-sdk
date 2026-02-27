@@ -18,6 +18,9 @@ class RpcClient {
   public notifications: Json[] = [];
 
   constructor(private readonly proc: ReturnType<typeof spawn>) {
+    if (!proc.stdout || !proc.stdin) {
+      throw new Error("codex app-server did not provide stdio pipes");
+    }
     this.rl = readline.createInterface({ input: proc.stdout });
     this.rl.on("line", (line) => this.onLine(line));
   }
@@ -51,6 +54,9 @@ class RpcClient {
   }
 
   private send(payload: Json): void {
+    if (!this.proc.stdin) {
+      throw new Error("stdin is unavailable for codex app-server process");
+    }
     this.proc.stdin.write(`${JSON.stringify(payload)}\n`);
   }
 
@@ -72,7 +78,9 @@ class RpcClient {
 
   async close(): Promise<void> {
     this.rl.close();
-    this.proc.stdin.end();
+    if (this.proc.stdin) {
+      this.proc.stdin.end();
+    }
     this.proc.kill("SIGTERM");
   }
 }

@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plan1 MCP UI Probe</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
+      }
+
+      body {
+        margin: 0;
+        padding: 16px;
+        background: #0f1720;
+        color: #e6edf5;
+      }
+
+      .card {
+        border: 1px solid #2d4255;
+        border-radius: 12px;
+        padding: 14px;
+        background: rgba(14, 23, 32, 0.96);
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 18px;
+      }
+
+      .marker {
+        margin-top: 12px;
+        display: inline-block;
+        border-radius: 999px;
+        border: 1px solid #10a37f;
+        color: #10a37f;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+        padding: 6px 12px;
+      }
+
+      .meta {
+        margin-top: 10px;
+        font-size: 12px;
+        opacity: 0.85;
+        line-height: 1.4;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Plan 1 Embedded UI Probe</h1>
+      <p>This widget tests MCP Apps bridge availability via <code>ui/*</code>.</p>
+      <div id="marker" class="marker">CODEx_UI_PROBE_READY</div>
+      <div id="meta" class="meta"></div>
+    </div>
+
+    <script>
+      (function () {
+        const TELEMETRY_ENDPOINT = "__PROBE_TELEMETRY_ENDPOINT__";
+        const MARKER_TEXT = "__PROBE_MARKER_TEXT__";
+
+        const markerEl = document.getElementById("marker");
+        const metaEl = document.getElementById("meta");
+        markerEl.textContent = MARKER_TEXT;
+
+        const sessionId = "session-" + Date.now();
+        const host = typeof window.openai !== "undefined" ? "chatgpt" : "codex";
+
+        const setMeta = (text) => {
+          metaEl.textContent = text;
+        };
+
+        const sendEvent = async (event, extra) => {
+          const payload = Object.assign(
+            {
+              host,
+              sessionId,
+              event,
+              timestamp: new Date().toISOString()
+            },
+            extra || {}
+          );
+
+          try {
+            await fetch(TELEMETRY_ENDPOINT, {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify(payload)
+            });
+          } catch (error) {
+            setMeta("Telemetry send failed: " + String(error));
+          }
+        };
+
+        const probeBridge = async () => {
+          await sendEvent("widget_mount", {
+            detail: navigator.userAgent.slice(0, 200)
+          });
+
+          if (typeof window.openai !== "undefined") {
+            await sendEvent("bridge_detected", {
+              detail: "window.openai present"
+            });
+          } else {
+            await sendEvent("bridge_error", {
+              detail: "window.openai missing"
+            });
+          }
+
+          const probeId = "probe-" + Date.now();
+          let settled = false;
+
+          window.addEventListener("message", function onMessage(ev) {
+            const data = ev.data;
+            if (!data || data.id !== probeId) {
+              return;
+            }
+            settled = true;
+            sendEvent("bridge_method_ok", {
+              method: "ui/ping",
+              detail: JSON.stringify(data).slice(0, 400)
+            });
+            setMeta("Bridge response received for ui/ping");
+          });
+
+          try {
+            window.parent.postMessage(
+              {
+                jsonrpc: "2.0",
+                id: probeId,
+                method: "ui/ping",
+                params: { sessionId }
+              },
+              "*"
+            );
+          } catch (error) {
+            settled = true;
+            await sendEvent("bridge_error", {
+              method: "ui/ping",
+              detail: "postMessage failed: " + String(error)
+            });
+            setMeta("postMessage failed. See telemetry.");
+            return;
+          }
+
+          setTimeout(async () => {
+            if (settled) return;
+            await sendEvent("bridge_error", {
+              method: "ui/ping",
+              detail: "No ui/ping response within 1500ms"
+            });
+            setMeta("No bridge response detected within timeout.");
+          }, 1500);
+        };
+
+        probeBridge();
+      })();
+    </script>
+  </body>
+</html>

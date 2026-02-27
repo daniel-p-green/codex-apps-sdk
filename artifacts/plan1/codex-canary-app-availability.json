@@ -1,0 +1,8 @@
+{
+  "generatedAt": "2026-02-27T04:05:02.571Z",
+  "host": "codex",
+  "appCount": 156,
+  "canaryAppAccessible": false,
+  "matchedApp": null,
+  "finalVerdict": "CANARY_APP_NOT_VISIBLE_IN_CODEX_APP_LIST"
+}
