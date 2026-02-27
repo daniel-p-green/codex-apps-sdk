@@ -7,6 +7,7 @@ import {
   writeFileSync
 } from "node:fs";
 import { createServer } from "node:http";
+import type { IncomingMessage } from "node:http";
 import path from "node:path";
 
 import {
@@ -76,7 +77,7 @@ const appendEvent = (event: ProbeEvent): void => {
   appendFileSync(eventPathForHost(stamped.host), `${JSON.stringify(stamped)}\n`, "utf8");
 };
 
-const parseJsonBody = async (req: Parameters<typeof createServer>[0]): Promise<unknown> => {
+const parseJsonBody = async (req: IncomingMessage): Promise<unknown> => {
   const chunks: Buffer[] = [];
   for await (const chunk of req) {
     chunks.push(Buffer.from(chunk));
@@ -129,7 +130,8 @@ const createCanaryServer = (): McpServer => {
         destructiveHint: false,
         openWorldHint: false,
         idempotentHint: true
-      }
+      },
+      _meta: {}
     },
     async (args) => {
       const sessionId = args.sessionId ?? randomUUID();

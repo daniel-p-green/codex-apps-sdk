@@ -31,6 +31,13 @@ This spike implements a single MCP backend with host-dependent presentation beha
 - Skill: `skills/codex-inline-apps/SKILL.md`.
 - Commands: `commands/apps-discover.md`, `commands/apps-health.md`.
 
+6. Codex flavor host (embedded UI runtime)
+- `src/codex-flavor-host.ts`: custom host over `codex app-server` with REST + SSE.
+- `src/host/app-server-gateway.ts`: protocol adapter + MCP status cache + event enrichment.
+- `src/host/widget-resolution.ts`: deterministic template URI resolution precedence.
+- `src/host/ui-policy.ts`: app-level UI kill switches and allow/block controls.
+- `public/codex-flavor/*`: browser client rendering inline iframe widgets and bridge relay.
+
 ## Public Tool Interfaces
 
 ### `search_or_fetch_catalog`
@@ -70,3 +77,4 @@ Output:
 - Missing UI bridge does not fail tool flow.
 - Render tool still returns text + structured data in fallback mode.
 - Health endpoint (`/health`) remains available for local validation.
+- Host adapter `mcpServer/resource/read` / `resourceTemplate/read` gracefully fall back to cached metadata when direct read RPC is unavailable.

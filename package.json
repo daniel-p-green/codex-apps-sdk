@@ -6,6 +6,7 @@
   "description": "Dual-mode Apps SDK + Codex connector spike (tool-first fallback with optional UI host mode).",
   "scripts": {
     "dev": "tsx src/server.ts",
+    "dev:host": "tsx src/codex-flavor-host.ts",
     "dev:plan1:canary": "tsx src/plan1-canary-server.ts",
     "build": "tsc -p tsconfig.build.json",
     "start": "node dist/src/server.js",

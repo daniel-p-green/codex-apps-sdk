@@ -32,6 +32,16 @@ Run MCP server:
 npm run dev
 ```
 
+Run custom Codex flavor host (web client over `codex app-server`):
+
+```bash
+npm run dev:host
+```
+
+Then open:
+
+- `http://localhost:8790`
+
 Server defaults:
 - MCP endpoint: `http://localhost:8787/mcp`
 - Health endpoint: `http://localhost:8787/health`
@@ -67,6 +77,7 @@ Render output:
 
 - Feasibility report: `docs/feasibility-report.md`
 - Architecture spec: `docs/architecture-spec.md`
+- Codex flavor host spec: `docs/codex-flavor-host.md`
 - Validation matrix: `docs/validation-matrix.md`
 - Codex config example: `docs/codex-config.example.toml`
 
