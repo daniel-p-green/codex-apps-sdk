@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Codex Companion Host - Embedded Apps UI</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>Codex Companion Host</h1>
+        <p class="subtle">Figma-first embedded apps runtime over <code>codex app-server</code></p>
+      </div>
+      <div class="policy" id="policy-chip">Loading policy…</div>
+    </header>
+
+    <main class="layout">
+      <section class="panel controls">
+        <h2>Session</h2>
+        <label>
+          Model
+          <select id="model-select"></select>
+        </label>
+        <label>
+          App
+          <select id="app-select"></select>
+        </label>
+        <div class="row">
+          <button id="refresh-models">Refresh Models</button>
+          <button id="refresh-apps">Refresh Apps</button>
+          <button id="new-thread">New Thread</button>
+        </div>
+        <p class="thread-id" id="thread-id">Thread: none</p>
+      </section>
+
+      <section class="panel composer">
+        <h2>Prompt</h2>
+        <textarea
+          id="prompt-input"
+          rows="5"
+          placeholder="Describe what you want to do with the selected app…"
+        ></textarea>
+        <div class="row">
+          <button id="send-turn">Send</button>
+        </div>
+      </section>
+
+      <section class="panel timeline-panel">
+        <h2>Timeline</h2>
+        <div id="timeline" class="timeline"></div>
+      </section>
+    </main>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
