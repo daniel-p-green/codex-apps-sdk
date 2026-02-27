@@ -48,6 +48,21 @@ Optional capability signal in auto mode:
 HOST_SUPPORTS_MCP_APPS_UI=true npm run dev
 ```
 
+## Remotion Demo
+
+OpenAI-branded explainer composition for the Apps SDK + Codex integration:
+
+```bash
+npm run remotion:studio
+npm run remotion:compositions
+npm run remotion:render:integration-demo
+```
+
+Render output:
+
+- `out/openai-apps-codex-integration.mp4`
+- Design/build notes: `docs/remotion-openai-integration-demo.md`
+
 ## Key Artifacts
 
 - Feasibility report: `docs/feasibility-report.md`

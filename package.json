@@ -9,6 +9,9 @@
     "build": "tsc -p tsconfig.build.json",
     "start": "node dist/src/server.js",
     "test": "vitest run",
+    "remotion:studio": "remotion studio remotion/index.ts",
+    "remotion:compositions": "remotion compositions remotion/index.ts",
+    "remotion:render:integration-demo": "remotion render remotion/index.ts OpenAIAppsCodexIntegrationDemo out/openai-apps-codex-integration.mp4",
     "validate:matrix": "tsx scripts/validate-matrix.ts",
     "apps:list": "tsx scripts/codex-app-list.ts",
     "apps:health": "tsx scripts/codex-app-health.ts",
@@ -17,7 +20,11 @@
   "dependencies": {
     "@modelcontextprotocol/ext-apps": "^1.0.1",
     "@modelcontextprotocol/sdk": "^1.20.2",
-    "zod": "^3.25.76"
+    "@remotion/cli": "^4.0.429",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "remotion": "^4.0.429",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",
